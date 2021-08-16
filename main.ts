@@ -1,4 +1,4 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Modal, Notice, Plugin, PluginSettingTab, Setting, MarkdownView, MarkdownPreviewView} from 'obsidian';
 
 interface MyPluginSettings {
 	mySetting: string;
@@ -16,11 +16,11 @@ export default class MyPlugin extends Plugin {
 
 		await this.loadSettings();
 
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
-			new Notice('This is a notice!');
-		});
+		// this.addRibbonIcon('dice', 'Sample Plugin', () => {
+		// 	new Notice('This is a notice!');
+		// });
 
-		this.addStatusBarItem().setText('Status Bar Text');
+		// this.addStatusBarItem().setText('Status Bar Text');
 
 		this.addCommand({
 			id: 'open-sample-modal',
@@ -42,15 +42,25 @@ export default class MyPlugin extends Plugin {
 
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
-		this.registerCodeMirror((cm: CodeMirror.Editor) => {
-			console.log('codemirror', cm);
+		// this.registerCodeMirror((cm: CodeMirror.Editor) => {
+		// 	console.log('codemirror', cm);
+		// });
+
+		this.registerDomEvent(document, 'dblclick', (evt: MouseEvent) => {
+			if (evt.altKey) {
+				let state = this.app.workspace.activeLeaf.view.getState();
+				if(state.mode == 'source') {
+					state.mode = "preview";
+				} else {
+					state.mode = "source";
+				}
+				let t = this.app.workspace.activeLeaf.view.getViewType();
+				this.app.workspace.activeLeaf.setViewState({type: t, state: state});
+			}
+			
 		});
 
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		// this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
 	onunload() {
